@@ -16,6 +16,18 @@ base_model:
 
 QLoRA fine-tune of [tencent/Hy-MT2-1.8B](https://huggingface.co/tencent/Hy-MT2-1.8B) on [TVsub](https://github.com/longyuewangdcu/tvsub) for the WMT26 Video Subtitle Translation shared task.
 
+## Repository Structure
+
+| File | Description |
+|------|-------------|
+| `Hy-MT2-1.8B-train.ipynb` | QLoRA training notebook |
+| `evaluate_hymt2_tvsub.ipynb` | Inference & evaluation on TVsub test set |
+| `adapter_config.json` / `adapter_model.safetensors` | LoRA adapter weights |
+| `tokenizer.json` / `tokenizer_config.json` / `special_tokens_map.json` | Tokenizer files |
+| `chat_template.jinja` | Chat template used for prompt formatting |
+| `test_hypotheses.txt` | Model translations on TVsub test set (200 pairs) |
+| `test_hypotheses.metrics.json` | Evaluation metrics
+
 ---
 
 ## Training Details
@@ -90,14 +102,16 @@ print(tokenizer.decode(output[0][inputs.shape[-1]:], skip_special_tokens=True))
 
 ## Performance
 
-Final evaluation on the official TVsub test split (500 pairs):
+Evaluation on TVsub test set (200 pairs, multi-reference with up to 3 refs per segment):
 
 | Metric | Value |
 |--------|-------|
-| BLEU | 25.49 |
-| sacreBLEU | 24.26 |
-| chrF | 39.80 |
-| TER | 84.15 |
+| BLEU | 38.56 |
+| sacreBLEU | 37.63 |
+| chrF | 52.76 |
+| TER | 53.93 |
+
+Metrics computed by `evaluate_hymt2_tvsub.ipynb` using sacrebleu (tokenize="13a", smooth="exp") for sacreBLEU/chrF/TER and HuggingFace evaluate for BLEU.
 
 ---
 
