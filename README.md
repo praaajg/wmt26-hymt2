@@ -68,15 +68,9 @@ QLoRA fine-tune of [tencent/Hy-MT2-1.8B](https://huggingface.co/tencent/Hy-MT2-1
 
 ---
 
-## Notebook Fixes
+## Notes
 
-### 1. SGM multi-reference parsing bug
-
-`parse_sgm_multiref` originally grouped reference segments purely by numeric `<seg id>`, ignoring `<DOC>` boundaries. Since dev/test SGM files (`dev_trg.sgm` / `test_trg.sgm`) contain two documents (`SUB01`, `SUB02`) that both start segment numbering at 1, the old function silently merged references from two different TV shows — corrupting validation sacreBLEU (which drives early stopping & `save_best`) and the final test report. The fix parses each `<DOC>` block independently, then reassigns global IDs by offsetting each document's local numbering by the cumulative size of prior documents, so references align correctly with the concatenated source files.
-
-### 2. Optimizer/scheduler duplication
-
-The optimizer/scheduler setup cell built the optimizer and computed `total_update_steps` / `warmup_steps` twice due to a copy-paste duplication. The second copy was harmless (it simply overwrote the first) but wasteful; it has been removed.
+- **SGM multi-reference parsing fix:** `parse_sgm_multiref` originally grouped references purely by numeric `<seg id>`, ignoring `<DOC>` boundaries. Since dev/test SGM files contain two documents (`SUB01`, `SUB02`) that both restart segment numbering at 1, the old function merged references from two different TV shows — corrupting validation sacreBLEU (which drives early stopping & checkpoint selection) and the final test report. The fix parses each document independently and offsets global IDs so references align correctly with concatenated source files.
 
 ---
 
