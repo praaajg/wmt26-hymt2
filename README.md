@@ -77,10 +77,21 @@ QLoRA fine-tune of [tencent/Hy-MT2-1.8B](https://huggingface.co/tencent/Hy-MT2-1
 ## Usage
 
 ```python
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import PeftModel
 
-model = AutoModelForCausalLM.from_pretrained("aashish6969/wmt26-hymt2-finetuned")
-tokenizer = AutoTokenizer.from_pretrained("aashish6969/wmt26-hymt2-finetuned")
+base_model = AutoModelForCausalLM.from_pretrained(
+    "tencent/Hy-MT2-1.8B",
+    torch_dtype=torch.bfloat16,
+    attn_implementation="sdpa",
+    trust_remote_code=True,
+    device_map="auto",
+)
+model = PeftModel.from_pretrained(base_model, "path/to/this/repo")
+model.eval()
+
+tokenizer = AutoTokenizer.from_pretrained("tencent/Hy-MT2-1.8B", trust_remote_code=True)
 
 prompt = (
     "Translate the following text into English. Note that you must ONLY "
@@ -88,7 +99,7 @@ prompt = (
     "你好，世界"
 )
 msgs = [{"role": "user", "content": prompt}]
-inputs = tokenizer.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True, return_tensors="pt")
+inputs = tokenizer.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True, return_tensors="pt").to(model.device)
 output = model.generate(inputs, max_new_tokens=160, num_beams=4)
 print(tokenizer.decode(output[0][inputs.shape[-1]:], skip_special_tokens=True))
 ```
