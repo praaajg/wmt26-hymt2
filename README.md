@@ -76,6 +76,11 @@ QLoRA fine-tune of [tencent/Hy-MT2-1.8B](https://huggingface.co/tencent/Hy-MT2-1
 
 ## Usage
 
+```bash
+git clone https://github.com/praaajg/wmt26-hymt2
+cd wmt26-hymt2
+```
+
 ```python
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
@@ -88,7 +93,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     device_map="auto",
 )
-model = PeftModel.from_pretrained(base_model, ".")  # after cloning the repo
+model = PeftModel.from_pretrained(base_model, "wmt26-hymt2")
 model.eval()
 
 tokenizer = AutoTokenizer.from_pretrained("tencent/Hy-MT2-1.8B", trust_remote_code=True)
