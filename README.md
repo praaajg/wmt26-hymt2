@@ -88,7 +88,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     device_map="auto",
 )
-model = PeftModel.from_pretrained(base_model, "path/to/this/repo")
+model = PeftModel.from_pretrained(base_model, ".")  # after cloning the repo
 model.eval()
 
 tokenizer = AutoTokenizer.from_pretrained("tencent/Hy-MT2-1.8B", trust_remote_code=True)
